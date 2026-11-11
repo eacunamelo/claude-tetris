@@ -1,0 +1,32 @@
+/* Selector de skin y ajustes por tema (body[data-skin]). El fondo de los canvas lo fija skins.js. */
+#skin-select {
+  background: #22223a;
+  color: #aaa;
+  border: 1px solid #3a3a5a;
+  border-radius: 3px;
+  padding: 4px 6px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+#skin-select:focus-visible {
+  outline: 1px solid #7aa2f7;
+}
+
+body[data-skin="neon"] #board,
+body[data-skin="neon"] #next-canvas {
+  border-color: #1a3a4a;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+}
+
+body[data-skin="pastel"] #board,
+body[data-skin="pastel"] #next-canvas {
+  border-color: #4a4560;
+}
+
+body[data-skin="pixel"] #board,
+body[data-skin="pixel"] #next-canvas {
+  border-color: #3b5dc9;
+  border-radius: 0;
+}

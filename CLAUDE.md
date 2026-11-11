@@ -12,10 +12,12 @@ Open `index.html` directly, or serve statically: `python3 -m http.server 8000` /
 
 ## Architecture
 
-Three files: `index.html` (DOM + canvases), `style.css`, `game.js` (all logic, single global script, `'use strict'`).
+Files: `index.html` (DOM + canvases), `style.css`, `game.js` (all logic, single global script, `'use strict'`), `skins.js` (loaded BEFORE `game.js`) + `skins.css`.
+
+- Skins: `SKINS` in `skins.js` (retro/neon/pastel/pixel), each with `colors[0..7]`, `boardBg`, `gridColor`, `drawBlock(ctx,x,y,ci,size,alpha)`. `game.js` `drawBlock`/`drawGrid` delegate to `activeSkin()`; `COLORS` in `game.js` is legacy (not used for drawing). Choice persisted in `localStorage['tetris.skin']`; `#skin-select` change calls `redrawAll()`. Canvas bg is set by `applySkin` (inline style). New skins must reset `shadowBlur`/`globalAlpha` after drawing.
 
 - `index.html` hardcodes canvas size: `#board` 300x600 = `COLS*BLOCK` x `ROWS*BLOCK`. Changing `COLS`/`ROWS`/`BLOCK` in `game.js` requires updating canvas `width`/`height` there. `#next-canvas` is 120x120 (4 cells x 30px, `drawNext` uses fixed `NB = 30`).
-- Board = `ROWS x COLS` int matrix: `0` empty, `1-7` index into both `COLORS` and `PIECES` (same index = piece type).
+- Board = `ROWS x COLS` int matrix: `0` empty, `1-7` index into both `PIECES` and each skin's `colors` (same index = piece type).
 - Module-level mutable state (`board`, `current`, `next`, `score`, ...) declared in one `let`; `init()` resets everything and doubles as restart handler.
 - Loop: `loop(ts)` via `requestAnimationFrame`, accumulates `dropAccum` vs `dropInterval`; `animId` cancelled on pause/game over. Resume from pause calls `loop` directly after resetting `lastTime`.
 - Piece lifecycle: `lockPiece()` = `merge()` -> `clearLines()` -> `spawn()`. `spawn()` calls `endGame()` if new piece collides. Score/level/`dropInterval` are updated inside `clearLines()`.
