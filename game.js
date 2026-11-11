@@ -41,6 +41,7 @@ const overlayTitle = document.getElementById('overlay-title');
 const overlayScore = document.getElementById('overlay-score');
 const restartBtn = document.getElementById('restart-btn');
 
+let startLevel = 1; // [pause-menu] nivel inicial (lo fija pause-menu.js)
 let board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
 
 function createBoard() {
@@ -107,7 +108,7 @@ function clearLines() {
   if (cleared) {
     lines += cleared;
     score += (LINE_SCORES[cleared] || 0) * level;
-    level = Math.floor(lines / 10) + 1;
+    level = Math.max(startLevel, Math.floor(lines / 10) + 1); // [pause-menu]
     dropInterval = Math.max(100, 1000 - (level - 1) * 90);
     updateHUD();
   }
@@ -232,12 +233,11 @@ function togglePause() {
   paused = !paused;
   if (!paused) {
     lastTime = performance.now();
+    pauseMenuHide(); // [pause-menu]
     loop(lastTime);
   } else {
     cancelAnimationFrame(animId);
-    overlayTitle.textContent = 'PAUSA';
-    overlayScore.textContent = '';
-    overlay.classList.remove('hidden');
+    pauseMenuShow(); // [pause-menu] reemplaza el overlay "PAUSA"
   }
 }
 
@@ -261,21 +261,24 @@ function init() {
   board = createBoard();
   score = 0;
   lines = 0;
-  level = 1;
+  if (typeof pauseMenuApplyLevel === 'function') pauseMenuApplyLevel(); // [pause-menu] fija startLevel elegido
+  level = startLevel; // [pause-menu]
   paused = false;
   gameOver = false;
-  dropInterval = 1000;
+  dropInterval = Math.max(100, 1000 - (level - 1) * 90); // [pause-menu]
   dropAccum = 0;
   lastTime = performance.now();
   next = randomPiece();
   spawn();
   updateHUD();
   overlay.classList.add('hidden');
+  if (typeof pauseMenuHide === 'function') pauseMenuHide(); // [pause-menu]
   cancelAnimationFrame(animId);
   animId = requestAnimationFrame(loop);
 }
 
 document.addEventListener('keydown', e => {
+  if (typeof pauseMenuKey === 'function' && pauseMenuKey(e)) return; // [pause-menu] P/Esc, menú y bloqueo de teclas
   if (e.code === 'KeyP') { togglePause(); return; }
   if (paused || gameOver) return;
   switch (e.code) {
