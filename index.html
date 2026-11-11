@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tetris</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="pause-menu.css" />
+  <link rel="stylesheet" href="skins.css" />
   <link rel="stylesheet" href="records.css" />
 </head>
 <body>
@@ -33,6 +35,11 @@
           <canvas id="next-canvas" width="120" height="120"></canvas>
         </div>
 
+        <div class="panel-section">
+          <label class="label" for="skin-select">SKIN</label>
+          <select id="skin-select"></select>
+        </div>
+
         <div class="panel-section controls">
           <span class="label">CONTROLS</span>
           <ul>
@@ -40,7 +47,7 @@
             <li><kbd>↑</kbd> rotar</li>
             <li><kbd>↓</kbd> bajar</li>
             <li><kbd>Space</kbd> caída</li>
-            <li><kbd>P</kbd> pausa</li>
+            <li><kbd>P</kbd><kbd>Esc</kbd> pausa</li>
           </ul>
         </div>
       </aside>
@@ -64,10 +71,39 @@
         <button id="reset-records-start" class="btn-link" type="button">Borrar records</button>
       </div>
     </div>
+
+    <div id="pause-menu" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="pm-title">
+      <div class="overlay-box pm-box">
+        <div id="pm-main" class="pm-view">
+          <p id="pm-title" class="pm-title">PAUSA</p>
+          <button type="button" class="pm-btn" id="pm-resume">Reanudar</button>
+          <button type="button" class="pm-btn" id="pm-restart">Reiniciar</button>
+          <button type="button" class="pm-btn" id="pm-controls">Ver controles</button>
+          <label class="pm-level" for="pm-start-level">
+            <span>Nivel inicial</span>
+            <select id="pm-start-level"></select>
+          </label>
+          <p class="pm-hint">Se aplica al reiniciar</p>
+        </div>
+        <div id="pm-controls-view" class="pm-view hidden">
+          <p class="pm-title">CONTROLES</p>
+          <ul class="pm-keys">
+            <li><span><kbd>←</kbd><kbd>→</kbd></span> mover</li>
+            <li><span><kbd>↑</kbd><kbd>X</kbd></span> rotar</li>
+            <li><span><kbd>↓</kbd></span> bajar</li>
+            <li><span><kbd>Space</kbd></span> caída</li>
+            <li><span><kbd>P</kbd><kbd>Esc</kbd></span> pausa</li>
+          </ul>
+          <button type="button" class="pm-btn" id="pm-back">Volver</button>
+        </div>
+      </div>
+    </div>
   </div>
   </main>
 
+  <script src="skins.js"></script>
   <script src="game.js"></script>
+  <script src="pause-menu.js"></script>
   <script src="records.js"></script>
 </body>
 </html>

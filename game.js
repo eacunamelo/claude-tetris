@@ -4,6 +4,7 @@ const COLS = 10;
 const ROWS = 20;
 const BLOCK = 30;
 
+// [skins] COLORS ya no se usa para dibujar: la paleta vive en SKINS[...].colors (skins.js)
 const COLORS = [
   null,
   '#4dd0e1', // I - cyan
@@ -41,6 +42,7 @@ const overlayScore = document.getElementById('overlay-score');
 const restartBtn = document.getElementById('restart-btn');
 
 let comboCount = 0, bestCombo = 0; // [records]
+let startLevel = 1; // [pause-menu] nivel inicial (lo fija pause-menu.js)
 let board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
 
 function createBoard() {
@@ -107,7 +109,7 @@ function clearLines() {
   if (cleared) {
     lines += cleared;
     score += (LINE_SCORES[cleared] || 0) * level;
-    level = Math.floor(lines / 10) + 1;
+    level = Math.max(startLevel, Math.floor(lines / 10) + 1); // [pause-menu]
     dropInterval = Math.max(100, 1000 - (level - 1) * 90);
     updateHUD();
     comboCount++; // [records]
@@ -163,18 +165,11 @@ function updateHUD() {
 
 function drawBlock(context, x, y, colorIndex, size, alpha) {
   if (!colorIndex) return;
-  const color = COLORS[colorIndex];
-  context.globalAlpha = alpha ?? 1;
-  context.fillStyle = color;
-  context.fillRect(x * size + 1, y * size + 1, size - 2, size - 2);
-  // highlight
-  context.fillStyle = 'rgba(255,255,255,0.12)';
-  context.fillRect(x * size + 1, y * size + 1, size - 2, 4);
-  context.globalAlpha = 1;
+  activeSkin().drawBlock(context, x, y, colorIndex, size, alpha); // [skins]
 }
 
 function drawGrid() {
-  ctx.strokeStyle = '#22222e';
+  ctx.strokeStyle = activeSkin().gridColor; // [skins]
   ctx.lineWidth = 0.5;
   for (let c = 1; c < COLS; c++) {
     ctx.beginPath();
@@ -223,6 +218,13 @@ function drawNext() {
       drawBlock(nextCtx, offX + c, offY + r, shape[r][c], NB);
 }
 
+// [skins] redibuja tablero y next al cambiar de skin (también en pausa/game over)
+function redrawAll() {
+  if (!board || !current || !next) return;
+  draw();
+  drawNext();
+}
+
 function endGame() {
   gameOver = true;
   cancelAnimationFrame(animId);
@@ -237,12 +239,11 @@ function togglePause() {
   paused = !paused;
   if (!paused) {
     lastTime = performance.now();
+    pauseMenuHide(); // [pause-menu]
     loop(lastTime);
   } else {
     cancelAnimationFrame(animId);
-    overlayTitle.textContent = 'PAUSA';
-    overlayScore.textContent = '';
-    overlay.classList.remove('hidden');
+    pauseMenuShow(); // [pause-menu] reemplaza el overlay "PAUSA"
   }
 }
 
@@ -267,22 +268,25 @@ function init() {
   board = createBoard();
   score = 0;
   lines = 0;
-  level = 1;
+  if (typeof pauseMenuApplyLevel === 'function') pauseMenuApplyLevel(); // [pause-menu] fija startLevel elegido
+  level = startLevel; // [pause-menu]
   paused = false;
   gameOver = false;
-  dropInterval = 1000;
+  dropInterval = Math.max(100, 1000 - (level - 1) * 90); // [pause-menu]
   dropAccum = 0;
   lastTime = performance.now();
   next = randomPiece();
   spawn();
   updateHUD();
   overlay.classList.add('hidden');
+  if (typeof pauseMenuHide === 'function') pauseMenuHide(); // [pause-menu]
   cancelAnimationFrame(animId);
   animId = requestAnimationFrame(loop);
 }
 
 document.addEventListener('keydown', e => {
   if (e.target && e.target.tagName === 'INPUT') return; // [records] ignorar teclas al escribir nombre
+  if (typeof pauseMenuKey === 'function' && pauseMenuKey(e)) return; // [pause-menu] P/Esc, menú y bloqueo de teclas
   if (e.code === 'KeyP') { togglePause(); return; }
   if (paused || gameOver) return;
   switch (e.code) {
