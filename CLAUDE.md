@@ -21,4 +21,5 @@ Three files: `index.html` (DOM + canvases), `style.css`, `game.js` (all logic, s
 - Piece lifecycle: `lockPiece()` = `merge()` -> `clearLines()` -> `spawn()`. `spawn()` calls `endGame()` if new piece collides. Score/level/`dropInterval` are updated inside `clearLines()`.
 - Rotation: `rotateCW` (transpose + reverse), `tryRotate` tries horizontal kicks `[0,-1,1,-2,2]` only (no SRS, no floor kicks).
 - Scoring is spread across `clearLines` (line table x level), `hardDrop` (2/cell), `softDrop` (1/row); gravity-based drops in `loop` score nothing.
+- Records (`records.js`, `records.css`, loaded after `game.js`): start screen (`#start-screen`) shown on load; `game.js` no longer calls `init()` at file end (sets `gameOver = true`), the Jugar button calls `init()`. `endGame()` calls `Records.onGameOver(score, lines, bestCombo)`. Combo (`comboCount`/`bestCombo`) tracked in `clearLines`. localStorage keys `tetris.records` (top 5 `{name,score,lines,combo,date}`) and `tetris.bests` (`{combo,lines}`). Keydown handler ignores events from `<input>`. Hooks in `game.js` marked `// [records]`.
 - Piece randomizer is uniform random (no 7-bag).

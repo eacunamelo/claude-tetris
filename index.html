@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tetris</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="records.css" />
 </head>
 <body>
   <main class="page">
@@ -49,12 +50,24 @@
       <div class="overlay-box">
         <p id="overlay-title">GAME OVER</p>
         <p id="overlay-score"></p>
+        <div id="records-gameover" class="records-box"></div>
         <button id="restart-btn">Reiniciar</button>
+        <button id="reset-records-go" class="btn-link" type="button">Borrar records</button>
+      </div>
+    </div>
+
+    <div id="start-screen" class="overlay">
+      <div class="overlay-box">
+        <p class="start-title">RECORDS</p>
+        <div id="records-start" class="records-box"></div>
+        <button id="play-btn" class="btn" type="button">Jugar</button>
+        <button id="reset-records-start" class="btn-link" type="button">Borrar records</button>
       </div>
     </div>
   </div>
   </main>
 
   <script src="game.js"></script>
+  <script src="records.js"></script>
 </body>
 </html>
