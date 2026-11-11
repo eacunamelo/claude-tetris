@@ -6,6 +6,7 @@
   <title>Tetris</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="pause-menu.css" />
+  <link rel="stylesheet" href="skins.css" />
 </head>
 <body>
   <main class="page">
@@ -31,6 +32,11 @@
         <div class="panel-section">
           <span class="label">NEXT</span>
           <canvas id="next-canvas" width="120" height="120"></canvas>
+        </div>
+
+        <div class="panel-section">
+          <label class="label" for="skin-select">SKIN</label>
+          <select id="skin-select"></select>
         </div>
 
         <div class="panel-section controls">
@@ -83,6 +89,7 @@
   </div>
   </main>
 
+  <script src="skins.js"></script>
   <script src="game.js"></script>
   <script src="pause-menu.js"></script>
 </body>
