@@ -91,12 +91,15 @@ const Records = (() => {
   const goBox = document.getElementById('records-gameover');
   const startScreen = document.getElementById('start-screen');
 
+  let pendingSave = null; // guarda la entrada pendiente (si hay input de nombre visible)
+
   function onGameOver(score, linesDone, combo) {
     const bests = loadBests();
     bests.combo = Math.max(bests.combo, num(combo));
     bests.lines = Math.max(bests.lines, num(linesDone));
     writeJSON(KEY_BESTS, bests);
 
+    pendingSave = null;
     if (!qualifies(score)) { render(goBox, -1); return; }
 
     goBox.textContent = '';
@@ -112,6 +115,7 @@ const Records = (() => {
     const doSave = () => {
       if (saved) return;
       saved = true;
+      pendingSave = null;
       const name = input.value.trim().slice(0, 12) || DEFAULT_NAME;
       const idx = addEntry({ name, score, lines: linesDone, combo: num(combo), date: new Date().toISOString() });
       render(goBox, idx);
@@ -121,12 +125,14 @@ const Records = (() => {
     const row = el('div', 'name-row');
     row.append(input, save);
     goBox.appendChild(row);
-    input.focus();
-    input.select();
+    pendingSave = doSave;
+    // retrasar el foco: evita que una tecla de juego aun pulsada escriba en el input
+    setTimeout(() => { if (!saved) { input.focus(); input.select(); } }, 400);
   }
 
   function resetRecords() {
     if (!confirm('Borrar todos los records?')) return;
+    pendingSave = null;
     try { localStorage.removeItem(KEY_TOP); localStorage.removeItem(KEY_BESTS); } catch (e) { /* ignorar */ }
     render(startBox, -1);
     if (gameOver && startScreen.classList.contains('hidden')) render(goBox, -1);
@@ -134,6 +140,11 @@ const Records = (() => {
 
   document.getElementById('reset-records-start').addEventListener('click', resetRecords);
   document.getElementById('reset-records-go').addEventListener('click', resetRecords);
+  // limpiar el panel de game over al reiniciar (evita contenido viejo en otros usos del overlay)
+  document.getElementById('restart-btn').addEventListener('click', () => {
+    if (pendingSave) pendingSave(); // no perder un record sin guardar al reiniciar
+    goBox.textContent = '';
+  });
   document.getElementById('play-btn').addEventListener('click', e => {
     e.currentTarget.blur();
     startScreen.classList.add('hidden');

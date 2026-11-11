@@ -92,3 +92,6 @@
   cursor: pointer;
 }
 .btn-link:hover { color: #e57373; }
+
+#records-gameover:empty { display: none; }
+#records-gameover:empty ~ #reset-records-go { display: none; }
