@@ -43,6 +43,8 @@ Es una versión jugable del Tetris clásico con todas las mecánicas que esperar
 - **Niveles** que aumentan cada 10 líneas y aceleran la caída.
 - **Skins** (Retro, Neón, Pastel, Pixel art) seleccionables desde el panel lateral; la preferencia se guarda en `localStorage` (`tetris.skin`) y se aplica sin recargar.
 - **Menú de pausa** (`P` o `Esc`): Reanudar, Reiniciar, Ver controles y Nivel inicial (1–10, guardado en `localStorage`). Las teclas del juego se ignoran con el menú abierto. **Game Over** con opción de reinicio.
+- **Tabla de records local**: top 5 puntuaciones con nombre (se pide al terminar si entras en el top), guardadas en `localStorage`. Se muestran en la pantalla de inicio y en Game Over, con tu entrada resaltada. Incluye mejor combo (locks consecutivos que limpian líneas) y máximo de líneas en una partida. Botón **Borrar records** para reiniciar.
+- **Pantalla de inicio** con botón **Jugar**: el juego no arranca hasta pulsarlo.
 
 ---
 
@@ -162,6 +164,8 @@ Cuando una pieza recién generada ya colisiona al aparecer (`spawn`), se dispara
 ├── game.js         # Toda la lógica del Tetris (~300 líneas)
 ├── skins.js        # Skins: paleta, fondo, cuadrícula y dibujo de bloques
 ├── skins.css       # Estilos del selector de skin y ajustes por tema
+├── records.js      # Tabla de records (localStorage) y pantalla de inicio
+├── records.css     # Estilos de records / pantalla de inicio
 └── README.md
 ```
 

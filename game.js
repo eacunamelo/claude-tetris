@@ -41,6 +41,7 @@ const overlayTitle = document.getElementById('overlay-title');
 const overlayScore = document.getElementById('overlay-score');
 const restartBtn = document.getElementById('restart-btn');
 
+let comboCount = 0, bestCombo = 0; // [records]
 let startLevel = 1; // [pause-menu] nivel inicial (lo fija pause-menu.js)
 let board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
 
@@ -111,6 +112,10 @@ function clearLines() {
     level = Math.max(startLevel, Math.floor(lines / 10) + 1); // [pause-menu]
     dropInterval = Math.max(100, 1000 - (level - 1) * 90);
     updateHUD();
+    comboCount++; // [records]
+    if (comboCount > bestCombo) bestCombo = comboCount; // [records]
+  } else {
+    comboCount = 0; // [records]
   }
 }
 
@@ -226,6 +231,7 @@ function endGame() {
   overlayTitle.textContent = 'GAME OVER';
   overlayScore.textContent = `Puntuación: ${score.toLocaleString()}`;
   overlay.classList.remove('hidden');
+  if (typeof Records !== 'undefined') Records.onGameOver(score, lines, bestCombo); // [records]
 }
 
 function togglePause() {
@@ -258,6 +264,7 @@ function loop(ts) {
 }
 
 function init() {
+  comboCount = 0; bestCombo = 0; // [records]
   board = createBoard();
   score = 0;
   lines = 0;
@@ -278,6 +285,7 @@ function init() {
 }
 
 document.addEventListener('keydown', e => {
+  if (e.target && e.target.tagName === 'INPUT') return; // [records] ignorar teclas al escribir nombre
   if (typeof pauseMenuKey === 'function' && pauseMenuKey(e)) return; // [pause-menu] P/Esc, menú y bloqueo de teclas
   if (e.code === 'KeyP') { togglePause(); return; }
   if (paused || gameOver) return;
@@ -305,4 +313,5 @@ document.addEventListener('keydown', e => {
 
 restartBtn.addEventListener('click', init);
 
-init();
+// [records] el juego no arranca hasta pulsar Jugar en la pantalla de inicio (records.js llama a init())
+gameOver = true;

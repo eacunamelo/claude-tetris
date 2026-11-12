@@ -93,4 +93,4 @@ pmLevelSel.addEventListener('change', () => {
 });
 
 pmLevelSel.value = String(pmPendingLevel);
-if (pmPendingLevel !== MIN_START_LEVEL) init(); // game.js ya arrancó con nivel 1
+// [records] sin init() aquí: la partida empieza al pulsar Jugar y init() aplica el nivel elegido
